@@ -1,11 +1,27 @@
  $(document).ready( function() {
 
-    width = 800;
-    height = 400;
-    $vecdemo = $('canvas#vecdemo');
-    $vecdemo.attr('height', height).attr('width', width);
-    $ex = $('#example');
-    vecCenter = {x: width/2,y: height/2};
+    width = $('div#vecdemo').width();
+    height = $('div#vecdemo').height();
+    $vCanvas0 = $('canvas#v0');
+    $vCanvas1 = $('canvas#v1');
+
+    $vCanvas0.attr('height', height).attr('width', width).css('position', 'absolute');
+    $vCanvas1.attr('height', height).attr('width', width).css('position', 'absolute');
+    $currentCanvas = $vCanvas0;
+
+    vecCenter = {x: width*0.5,y: height*0.35, reflectionPoint: height*0.35};
+
+    function swapCanvases(){
+      if(vCanvas0.style.visibility=='visible'){
+        vCanvas0.style.visibility='hidden';
+        vCanvas1.style.visibility='visible';
+        currentCanvas  = vCanvas0;
+      }else{
+        vCanvas0.style.visibility='visible';
+        vCanvas1.style.visibility='hidden';
+        currentCanvas  = vCanvas1;
+      }
+    }
 
     Vectorblog = function(canvas) {
         this.theta = 0;
@@ -23,7 +39,16 @@
         }
 
         this.render = function() {
-            $vecdemo.drawEllipse({
+
+            $currentCanvas.drawEllipse({
+                fillStyle: 'rgba(128, 128, 255, 0.05)',
+                x: this.x, 
+                y: vecCenter.reflectionPoint - (this.y*-1),
+                width: this.radius,
+                height: this.radius
+            });
+
+            $currentCanvas.drawEllipse({
                 fillStyle: this.radial,
                 x: this.x, 
                 y: this.y,
@@ -31,7 +56,7 @@
                 height: this.radius
             });
 
-            $vecdemo.drawEllipse({
+            $currentCanvas.drawEllipse({
                 fillStyle: 'rgba(0, 0, 64, 0.25)',
                 x: this.x+this.radius/8, 
                 y: this.y+this.radius/8,
@@ -39,35 +64,38 @@
                 height: this.radius/3
             });
 
-            $vecdemo.drawEllipse({
+            $currentCanvas.drawEllipse({
                 fillStyle: 'rgba(255, 255, 255, 0.75)',
                 x: this.x-this.radius/8, 
                 y: this.y-this.radius/8,
                 width: this.radius/10,
                 height: this.radius/10
             });
+
         }        
     }
 
     doLoop = function() {
         for (var i = 0, len = blobs.length; i < len; i++) {
-            blobs[i].moveTo((blobs[i].theta +0.01)%360,100-(i/2),Math.sin((blobs[i].theta + i/10))*20 %100);
+            blobs[i].moveTo((blobs[i].theta + 0.01)%360,100-(i/100),(Math.sin(blobs[i].theta*i/8 + i))*50%60);
         }
-        $vecdemo.clearCanvas();
+        $currentCanvas.clearCanvas();
         for (var i = 0, len = blobs.length; i < len; i++) {
             blobs[i].render();
         }
-        $ex.html(blobs[0].theta+' '+blobs[0].x+' '+blobs[0].y+' '+blobs[0].radius);
+        swapCanvases();
     }
 
     var blobs = [];
-    for (i = 0; i<100; i++) {
-        blobs.push(new Vectorblog($vecdemo));
-        blobs[i].moveTo(i*5,100,i);
+    for (i = 0; i<50; i++) {
+        blobs.push(new Vectorblog($currentCanvas));
+        blobs[i].moveTo(i/2,i*10,(i * 100) % 30);
     }
-    loop = setInterval(function(){doLoop()}, 20);
+    loop = setInterval(function(){doLoop()}, 15);
 
 
+
+    
 
 
 });

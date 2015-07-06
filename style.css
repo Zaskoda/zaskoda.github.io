@@ -1,4 +1,11 @@
-canvas#vecdemo {
-	background: #000;
-	border: 4px solid #888;
+body {
+    background: #000;
 }
+
+div#vecdemo {
+    width: 800px;
+    height: 300px;
+    margin: 50px auto 0 auto;
+    background: linear-gradient(to top, #000088, #000000);
+}
+
